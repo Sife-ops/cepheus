@@ -3,3 +3,4 @@ Dockerfile
 dist/
 log
 node_modules/
+shadow-realm/
