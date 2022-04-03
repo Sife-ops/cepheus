@@ -1,49 +1,21 @@
 #!/usr/bin/env node
 
+import * as c from './utility/constant';
+import * as f from './utility/function';
 import fetch from 'cross-fetch';
 import fs from 'fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-
-const loginMutation = `
-mutation Login($username: String!, $password: String!) {
-  login(username: $username, password: $password) {
-    accessToken
-  }
-}
-`;
-
-const url = 'https://bookmarks.wyattgoettsch.com/api/graphql';
-// const url = "http://localhost:4000/graphql";
-
-// todo: xdg spec
-let token = '';
-const tokenCache = `${process.env.HOME}/.cepheus`;
+import { loginMutation } from './graphql/request';
 
 try {
-  token = fs.readFileSync(tokenCache, 'utf8');
+  f.setToken(fs.readFileSync(c.cacheFile, 'utf8'));
 } catch {
   console.log('no token cache');
 }
 
-const fetchGql = async (query: string, variables: {}) => {
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: token,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query,
-      variables,
-    }),
-  });
-
-  return await res.json();
-};
-
 const main = async () => {
-  const res = await fetchGql(loginMutation, {
+  const res = await f.fetchGql(loginMutation, {
     // username: "",
     // password: "",
   });
@@ -52,11 +24,8 @@ const main = async () => {
     throw new Error(JSON.stringify(res.errors));
   }
 
-  console.log(res.data.login.accessToken);
-  token = res.data.login.accessToken;
-
   try {
-    fs.writeFileSync(tokenCache, token);
+    fs.writeFileSync(c.cacheFile, f.getToken());
   } catch (e) {
     console.log(e);
   }
@@ -64,18 +33,10 @@ const main = async () => {
 
 const main2 = async () => {
   try {
-    token = fs.readFileSync(tokenCache, 'utf8');
+    f.setToken(fs.readFileSync(c.cacheFile, 'utf8'));
   } catch (e) {
     console.log('a');
   }
-
-  console.log(token);
-  console.log(process.env.HOME);
 };
 
 main2();
-
-// yargs(hideBin(process.argv))
-//   .commandDir("commands")
-//   .strict()
-//   .alias({ h: "help" }).argv;
