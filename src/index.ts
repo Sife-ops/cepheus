@@ -4,7 +4,7 @@ import * as c from './utility/constant';
 import * as f from './utility/function';
 import * as j from 'jsonwebtoken';
 import fs from 'fs';
-import yargs from 'yargs/yargs';
+import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 try {
@@ -28,6 +28,13 @@ try {
 }
 
 const argv = yargs(hideBin(process.argv))
+  .command(
+    '*',
+    'Show help',
+    () => {},
+    (argv) => {
+      yargs.showHelp();
+    }
+  )
   .commandDir('commands')
-  .demandCommand(1, '')
   .help().argv;
