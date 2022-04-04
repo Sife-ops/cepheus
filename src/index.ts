@@ -5,12 +5,12 @@ import * as f from './utility/function';
 import * as r from './graphql/request';
 import fs from 'fs';
 import inquirer from 'inquirer';
-import util from 'util';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
 try {
   const a = fs.readFileSync(c.cacheFile, 'utf8');
+  // todo: check token expiration
   f.setToken(a);
 } catch (e) {
   // todo: indicate not logged in
@@ -76,8 +76,9 @@ const argv = yargs(hideBin(process.argv))
     'categories',
     'fetch categories',
     () => {},
-    f.tokenWrapper((argv) => {
-      console.log('hello');
+    f.tokenWrapper(async () => {
+      const res = await f.fetchGql(r.categoriesQuery);
+      f.logger(res.data.categories);
     })
   )
 

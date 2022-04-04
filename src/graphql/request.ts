@@ -18,4 +18,18 @@ query Bookmarks {
     }
   }
 }
-`
+`;
+
+export const categoriesQuery = `
+query Categories {
+  categories {
+    id
+    name
+    bookmarks {
+      id
+      url
+      description
+    }
+  }
+}
+`;
