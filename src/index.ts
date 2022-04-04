@@ -3,8 +3,8 @@
 import * as c from './utility/constant';
 import * as f from './utility/function';
 import * as r from './graphql/request';
+import commands from './commands';
 import fs from 'fs';
-import inquirer from 'inquirer';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
@@ -22,39 +22,7 @@ const argv = yargs(hideBin(process.argv))
   /*
    * login
    */
-  .command(
-    'login',
-    'log in',
-    () => {},
-    async () => {
-      const input = await inquirer.prompt([
-        {
-          message: 'username',
-          name: 'username',
-          type: 'string',
-        },
-        {
-          message: 'password',
-          name: 'password',
-          type: 'password',
-        },
-        {
-          message: 'remember',
-          name: 'remember',
-          type: 'list',
-          choices: ['yes', 'no'],
-        },
-      ]);
-
-      input.remember = input.remember === 'yes' ? true : false;
-
-      const res = await f.fetchGql(r.loginMutation, input);
-
-      // todo: response validation
-
-      fs.writeFileSync(c.cacheFile, res.data.login.accessToken);
-    }
-  )
+  .command('login', 'log in', () => {}, commands.login)
 
   /*
    * bookmarks
@@ -81,5 +49,6 @@ const argv = yargs(hideBin(process.argv))
       f.logger(res.data.categories);
     })
   )
-  .demandCommand(1,'')
+
+  .demandCommand(1, '')
   .help().argv;
