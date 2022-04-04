@@ -9,9 +9,9 @@ import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 
 try {
-  const a = fs.readFileSync(c.cacheFile, 'utf8');
+  const accessToken = fs.readFileSync(c.cacheFile, 'utf8');
   // todo: check token expiration
-  f.setToken(a);
+  f.setToken(accessToken);
 } catch (e) {
   // todo: indicate not logged in
   // console.log('no token cache');
@@ -24,7 +24,7 @@ const argv = yargs(hideBin(process.argv))
    */
   .command(
     'login',
-    'log into account',
+    'log in',
     () => {},
     async () => {
       const input = await inquirer.prompt([
@@ -81,5 +81,5 @@ const argv = yargs(hideBin(process.argv))
       f.logger(res.data.categories);
     })
   )
-
+  .demandCommand(1,'')
   .help().argv;
