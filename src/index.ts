@@ -24,7 +24,6 @@ try {
 
   f.setToken(accessToken);
 } catch (e) {
-  // todo: indicate not logged in
   console.log('You are not logged in.');
 }
 
