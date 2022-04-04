@@ -32,8 +32,9 @@ export const fetchGql = async (query: string, variables?: {}) => {
 
 export const tokenWrapper = (handler: (argv: any) => void) => {
   if (getToken() === '') {
-    console.log('You need to run "cepheus login" first.');
-    return () => {};
+    return () => {
+      console.log('You need to log in first.');
+    };
   }
   return handler;
 };
