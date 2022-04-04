@@ -2,44 +2,32 @@
 
 import * as c from './utility/constant';
 import * as f from './utility/function';
+import * as r from './graphql/request';
 import fs from 'fs';
 import inquirer from 'inquirer';
+import util from 'util';
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
-import { loginMutation } from './graphql/request';
 
 try {
   const a = fs.readFileSync(c.cacheFile, 'utf8');
   f.setToken(a);
 } catch (e) {
+  // todo: indicate not logged in
   // console.log('no token cache');
 }
 
-const tokenWrapper = (handler: (argv: any) => void) => {
-  if (f.getToken() === '') {
-    console.log('need to log in');
-    return () => {};
-  }
-  return handler;
-};
-
+// todo: demand command?
 const argv = yargs(hideBin(process.argv))
-  .command('*', 'default command', {
-    builder: {},
-    handler: (argv) => {
-      console.log('run default command');
-    },
-  })
-
   /*
-   * Login
+   * login
    */
   .command(
     'login',
     'log into account',
     () => {},
     async () => {
-      const i = await inquirer.prompt([
+      const input = await inquirer.prompt([
         {
           message: 'username',
           name: 'username',
@@ -58,13 +46,9 @@ const argv = yargs(hideBin(process.argv))
         },
       ]);
 
-      i.remember = i.remember === 'yes' ? true : false;
+      input.remember = input.remember === 'yes' ? true : false;
 
-      const res = await f.fetchGql(loginMutation, i);
-
-      if (res.errors) {
-        throw new Error(JSON.stringify(res.errors));
-      }
+      const res = await f.fetchGql(r.loginMutation, input);
 
       // todo: response validation
 
@@ -73,13 +57,26 @@ const argv = yargs(hideBin(process.argv))
   )
 
   /*
-   * todo: delete
+   * bookmarks
    */
   .command(
-    'hello',
-    'say hello',
+    'bookmarks',
+    'fetch bookmarks',
     () => {},
-    tokenWrapper((argv) => {
+    f.tokenWrapper(async () => {
+      const res = await f.fetchGql(r.bookmarksQuery);
+      f.logger(res.data.bookmarks);
+    })
+  )
+
+  /*
+   * categories
+   */
+  .command(
+    'categories',
+    'fetch categories',
+    () => {},
+    f.tokenWrapper((argv) => {
       console.log('hello');
     })
   )
