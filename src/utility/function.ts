@@ -1,3 +1,4 @@
+import fetch from 'cross-fetch';
 import { url } from './constant';
 
 export const fetchGql = async (query: string, variables: {}) => {

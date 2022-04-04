@@ -2,41 +2,86 @@
 
 import * as c from './utility/constant';
 import * as f from './utility/function';
-import fetch from 'cross-fetch';
 import fs from 'fs';
-import yargs from 'yargs';
+import inquirer from 'inquirer';
+import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers';
 import { loginMutation } from './graphql/request';
 
 try {
-  f.setToken(fs.readFileSync(c.cacheFile, 'utf8'));
-} catch {
-  console.log('no token cache');
+  const a = fs.readFileSync(c.cacheFile, 'utf8');
+  f.setToken(a);
+} catch (e) {
+  // console.log('no token cache');
 }
 
-const main = async () => {
-  const res = await f.fetchGql(loginMutation, {
-    // username: "",
-    // password: "",
-  });
-
-  if (res.errors) {
-    throw new Error(JSON.stringify(res.errors));
+const tokenWrapper = (handler: (argv: any) => void) => {
+  if (f.getToken() === '') {
+    console.log('need to log in');
+    return () => {};
   }
-
-  try {
-    fs.writeFileSync(c.cacheFile, f.getToken());
-  } catch (e) {
-    console.log(e);
-  }
+  return handler;
 };
 
-const main2 = async () => {
-  try {
-    f.setToken(fs.readFileSync(c.cacheFile, 'utf8'));
-  } catch (e) {
-    console.log('a');
-  }
-};
+const argv = yargs(hideBin(process.argv))
+  .command('*', 'default command', {
+    builder: {},
+    handler: (argv) => {
+      console.log('run default command');
+    },
+  })
 
-main2();
+  /*
+   * Login
+   */
+  .command(
+    'login',
+    'log into account',
+    () => {},
+    async () => {
+      const i = await inquirer.prompt([
+        {
+          message: 'username',
+          name: 'username',
+          type: 'string',
+        },
+        {
+          message: 'password',
+          name: 'password',
+          type: 'password',
+        },
+        {
+          message: 'remember',
+          name: 'remember',
+          type: 'list',
+          choices: ['yes', 'no'],
+        },
+      ]);
+
+      i.remember = i.remember === 'yes' ? true : false;
+
+      const res = await f.fetchGql(loginMutation, i);
+
+      if (res.errors) {
+        throw new Error(JSON.stringify(res.errors));
+      }
+
+      // todo: response validation
+
+      fs.writeFileSync(c.cacheFile, res.data.login.accessToken);
+    }
+  )
+
+  /*
+   * todo: delete
+   */
+  .command(
+    'hello',
+    'say hello',
+    () => {},
+    tokenWrapper((argv) => {
+      console.log('hello');
+    })
+  )
+
+  .help().argv;
