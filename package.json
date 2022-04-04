@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "pkg": "pkg . --targets node16-linux-x64 --output cepheus"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,13 @@
     "@types/node": "^17.0.23",
     "@types/yargs": "^17.0.10",
     "nodemon": "^2.0.15",
+    "pkg": "^5.5.2",
     "typescript": "^4.6.3"
+  },
+  "bin": {
+    "cepheus": "./dist/index.js"
+  },
+  "pkg": {
+    "scripts": "dist/**/*.js"
   }
 }
