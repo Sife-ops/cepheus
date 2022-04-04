@@ -4,7 +4,10 @@ import * as r from '../graphql/request';
 import fs from 'fs';
 import inquirer from 'inquirer';
 
-export default async () => {
+export const command: string = 'login';
+export const desc: string = 'log in';
+
+export const handler = async (): Promise<void> => {
   const input = await inquirer.prompt([
     {
       message: 'username',
