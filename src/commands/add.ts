@@ -1,15 +1,11 @@
 import * as r from '../graphql/request';
+import * as t from '../utility/type';
 import type { Arguments, CommandBuilder } from 'yargs';
 import { fetchGql } from '../utility/function';
 import { tokenWrapper } from '../utility/function';
 
 export const command = 'add <entity> <json>';
 export const desc = 'manage entities';
-
-interface Options {
-  entity: 'bookmark' | 'category';
-  json: string;
-}
 
 export const builder: CommandBuilder = (yargs) => {
   return yargs
@@ -25,24 +21,56 @@ export const builder: CommandBuilder = (yargs) => {
     });
 };
 
-export const handler = tokenWrapper(async (argv: Arguments<Options>) => {
+export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
   const json = JSON.parse(argv.json);
 
-  // todo: validate with io-ts or joi???
+  let decoded;
+  let response;
 
-  let res;
-
+  // todo: don't use switch
   switch (argv.entity) {
     case 'bookmark':
-      res = await fetchGql(r.bookmarkAddMutation, json);
-      console.log(res.data.bookmarkAdd);
+      decoded = t.BookmarkInput.decode(json);
+
+      if (decoded._tag === 'Left') {
+        throw new Error('Bookmark add input validation error.');
+      }
+
+      response = await fetchGql(r.bookmarkAddMutation, decoded.right);
+
+      decoded = t.Bookmark.decode(response.data.bookmarkAdd);
+
+      if (decoded._tag === 'Left') {
+        throw new Error('Bookmark add mutation response validation error.');
+      }
+
+      console.log(decoded.right);
+
       break;
+
     case 'category':
-      res = await fetchGql(r.categoryAddMutation, json);
-      console.log(res.data.categoryAdd);
+      decoded = t.Category.decode(json);
+
+      if (decoded._tag === 'Left') {
+        throw new Error('Category add input validation error.');
+      }
+
+      response = await fetchGql(r.categoryAddMutation, decoded.right);
+
+      decoded = t.Category.decode(response.data.categoryAdd);
+
+      if (decoded._tag === 'Left') {
+        throw new Error('Category add mutation response validation error.');
+      }
+
+      console.log(decoded.right);
+
       break;
+
     default:
-      console.log('Invalid entity.');
+      // todo: show help
+      console.log('Invalid entity option.');
+
       break;
   }
 });
