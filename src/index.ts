@@ -3,6 +3,7 @@
 import * as c from './utility/constant';
 import * as f from './utility/function';
 import * as j from 'jsonwebtoken';
+import fetch from 'cross-fetch';
 import fs from 'fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -24,11 +25,25 @@ const main = async () => {
     }
 
     f.setToken(accessToken);
-
-    // const res = await fetch(`${c.url}/refresh`);
-    // console.log(res);
   } catch (e) {
     console.log('You are not logged in.');
+  }
+
+  // todo: add try-catch?
+  if (f.getToken().length > 0) {
+    fetch(`${c.url}/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        authorization: f.getToken(),
+      },
+    }).then(async (res) => {
+      if (!res.ok) {
+        console.log('refresh failed');
+      }
+      const data = await res.json();
+      fs.writeFileSync(c.cacheFile, data.accessToken);
+    });
   }
 
   const argv = yargs(hideBin(process.argv))
@@ -36,7 +51,7 @@ const main = async () => {
       '*',
       'Show help',
       () => {},
-      (argv) => {
+      () => {
         yargs.showHelp();
       }
     )
