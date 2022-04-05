@@ -22,55 +22,37 @@ export const builder: CommandBuilder = (yargs) => {
 };
 
 export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
-  const json = JSON.parse(argv.json);
-
-  let decoded;
-  let response;
-
-  // todo: don't use switch
-  switch (argv.entity) {
-    case 'bookmark':
-      decoded = t.BookmarkInput.decode(json);
-
-      if (decoded._tag === 'Left') {
-        throw new Error('Bookmark add input validation error.');
-      }
-
-      response = await fetchGql(r.bookmarkAddMutation, decoded.right);
-
-      decoded = t.Bookmark.decode(response.data.bookmarkAdd);
-
-      if (decoded._tag === 'Left') {
-        throw new Error('Bookmark add mutation response validation error.');
-      }
-
-      console.log(decoded.right);
-
-      break;
-
-    case 'category':
-      decoded = t.Category.decode(json);
-
-      if (decoded._tag === 'Left') {
-        throw new Error('Category add input validation error.');
-      }
-
-      response = await fetchGql(r.categoryAddMutation, decoded.right);
-
-      decoded = t.Category.decode(response.data.categoryAdd);
-
-      if (decoded._tag === 'Left') {
-        throw new Error('Category add mutation response validation error.');
-      }
-
-      console.log(decoded.right);
-
-      break;
-
-    default:
-      // todo: show help
-      console.log('Invalid entity option.');
-
-      break;
+  const { entity } = argv;
+  // todo: validate options?
+  if (entity !== 'bookmark' && entity !== 'category') {
+    console.log('Invalid entity option.');
+    return;
   }
+
+  const operation = entity === 'bookmark' ? 'Bookmark' : 'Category';
+  const request =
+    entity === 'bookmark' ? r.bookmarkAddMutation : r.categoryAddMutation;
+
+  const json = JSON.parse(argv.json);
+  const decodedInput =
+    entity === 'bookmark'
+      ? t.BookmarkInput.decode(json)
+      : t.Category.decode(json);
+
+  if (decodedInput._tag === 'Left') {
+    throw new Error(`${operation} input validation error.`);
+  }
+
+  const response = await fetchGql(request, decodedInput.right);
+
+  const decodedResponse =
+    entity === 'bookmark'
+      ? t.Bookmark.decode(response.data.bookmarkAdd)
+      : t.Category.decode(response.data.categoryAdd);
+
+  if (decodedResponse._tag === 'Left') {
+    throw new Error(`${operation} add mutation response validation error.`);
+  }
+
+  console.log(decodedResponse.right);
 });
