@@ -6,7 +6,7 @@ export const fetchGql = async (query: string, variables?: {}) => {
   const res = await fetch(`${url}/graphql`, {
     method: 'POST',
     headers: {
-      Authorization: getToken(),
+      Authorization: getAccessToken(),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -31,7 +31,7 @@ export const fetchGql = async (query: string, variables?: {}) => {
 };
 
 export const tokenWrapper = (handler: (argv: any) => void) => {
-  if (getToken() === '') {
+  if (getAccessToken() === '') {
     return () => {
       console.log('You need to log in first.');
     };
@@ -51,8 +51,8 @@ export const logger = (o: any) => {
 
 let accessToken = '';
 
-export const getToken = () => accessToken;
+export const getAccessToken = () => accessToken;
 
-export const setToken = (s: string) => {
+export const setAccessToken = (s: string) => {
   accessToken = s;
 };

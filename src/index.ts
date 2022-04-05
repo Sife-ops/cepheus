@@ -24,18 +24,18 @@ const main = async () => {
       throw new Error('expired token');
     }
 
-    f.setToken(accessToken);
+    f.setAccessToken(accessToken);
   } catch (e) {
     console.log('You are not logged in.');
   }
 
   // todo: add try-catch?
-  if (f.getToken().length > 0) {
+  if (f.getAccessToken().length > 0) {
     fetch(`${c.url}/refresh`, {
       method: 'POST',
       credentials: 'include',
       headers: {
-        authorization: f.getToken(),
+        authorization: f.getAccessToken(),
       },
     }).then(async (res) => {
       if (!res.ok) {
