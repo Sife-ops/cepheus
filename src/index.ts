@@ -7,34 +7,41 @@ import fs from 'fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-try {
-  const accessToken = fs.readFileSync(c.cacheFile, 'utf8');
+const main = async () => {
+  try {
+    const accessToken = fs.readFileSync(c.cacheFile, 'utf8');
 
-  const decoded = j.decode(accessToken);
-  if (!decoded || typeof decoded === 'string' || !decoded.exp) {
-    throw new Error('invalid token');
-  }
-
-  const expiration = decoded.exp * 1000;
-  const now = new Date().getTime();
-  const offset = 10000;
-  if (now + offset > expiration) {
-    throw new Error('expired token');
-  }
-
-  f.setToken(accessToken);
-} catch (e) {
-  console.log('You are not logged in.');
-}
-
-const argv = yargs(hideBin(process.argv))
-  .command(
-    '*',
-    'Show help',
-    () => {},
-    (argv) => {
-      yargs.showHelp();
+    const decoded = j.decode(accessToken);
+    if (!decoded || typeof decoded === 'string' || !decoded.exp) {
+      throw new Error('invalid token');
     }
-  )
-  .commandDir('commands')
-  .help().argv;
+
+    const expiration = decoded.exp * 1000;
+    const now = new Date().getTime();
+    const offset = 10000;
+    if (now + offset > expiration) {
+      throw new Error('expired token');
+    }
+
+    f.setToken(accessToken);
+
+    // const res = await fetch(`${c.url}/refresh`);
+    // console.log(res);
+  } catch (e) {
+    console.log('You are not logged in.');
+  }
+
+  const argv = yargs(hideBin(process.argv))
+    .command(
+      '*',
+      'Show help',
+      () => {},
+      (argv) => {
+        yargs.showHelp();
+      }
+    )
+    .commandDir('commands')
+    .help().argv;
+};
+
+main();

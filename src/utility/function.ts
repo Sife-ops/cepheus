@@ -3,7 +3,7 @@ import util from 'util';
 import { url } from './constant';
 
 export const fetchGql = async (query: string, variables?: {}) => {
-  const res = await fetch(url, {
+  const res = await fetch(`${url}/graphql`, {
     method: 'POST',
     headers: {
       Authorization: getToken(),

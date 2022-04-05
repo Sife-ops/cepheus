@@ -1,4 +1,4 @@
-export const url = 'https://bookmarks.wyattgoettsch.com/api/graphql';
+export const url = 'https://bookmarks.wyattgoettsch.com/api';
 // const url = "http://localhost:4000/graphql";
 
 // todo: xdg spec
