@@ -1,6 +1,7 @@
 import * as r from '../graphql/request';
 import type { Arguments, CommandBuilder } from 'yargs';
 import { fetchGql } from '../utility/function';
+import { tokenWrapper } from '../utility/function';
 
 export const command = 'add <entity> <json>';
 export const desc = 'manage entities';
@@ -24,7 +25,7 @@ export const builder: CommandBuilder = (yargs) => {
     });
 };
 
-export const handler = async (argv: Arguments<Options>) => {
+export const handler = tokenWrapper(async (argv: Arguments<Options>) => {
   const json = JSON.parse(argv.json);
 
   // todo: validate with io-ts or joi???
@@ -44,4 +45,4 @@ export const handler = async (argv: Arguments<Options>) => {
       console.log('Invalid entity.');
       break;
   }
-};
+});
