@@ -1,6 +1,63 @@
+import * as c from './constant';
+import * as j from 'jsonwebtoken';
 import fetch from 'cross-fetch';
+import fs from 'fs';
 import util from 'util';
 import { url } from './constant';
+
+let accessToken = '';
+
+export const getAccessToken = () => accessToken;
+
+export const setAccessToken = (s: string) => {
+  accessToken = s;
+};
+
+export const tokenWrapper = (handler: (argv: any) => void) => {
+  try {
+    const accessToken = fs.readFileSync(c.cacheFile, 'utf8');
+
+    const decoded = j.decode(accessToken);
+    if (!decoded || typeof decoded === 'string' || !decoded.exp) {
+      throw new Error('invalid token');
+    }
+
+    const expiration = decoded.exp * 1000;
+    const now = new Date().getTime();
+    const offset = 10000;
+    if (now + offset > expiration) {
+      throw new Error('expired token');
+    }
+
+    setAccessToken(accessToken);
+  } catch (e) {
+    // todo: console.log all errors?
+    return () => {
+      console.log('You need to log in first.');
+    };
+  }
+
+  // todo: add try-catch?
+  // todo: move to tokenWrapper?
+  if (getAccessToken().length > 0) {
+    fetch(`${c.url}/refresh`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        authorization: getAccessToken(),
+      },
+    }).then(async (res) => {
+      if (!res.ok) {
+        console.log('Refresh failed.');
+        return;
+      }
+      const data = await res.json();
+      fs.writeFileSync(c.cacheFile, data.accessToken);
+    });
+  }
+
+  return handler;
+};
 
 export const fetchGql = async (query: string, variables?: {}) => {
   const res = await fetch(`${url}/graphql`, {
@@ -30,15 +87,6 @@ export const fetchGql = async (query: string, variables?: {}) => {
   return json;
 };
 
-export const tokenWrapper = (handler: (argv: any) => void) => {
-  if (getAccessToken() === '') {
-    return () => {
-      console.log('You need to log in first.');
-    };
-  }
-  return handler;
-};
-
 export const logger = (o: any) => {
   console.log(
     util.inspect(o, {
@@ -47,12 +95,4 @@ export const logger = (o: any) => {
       colors: true,
     })
   );
-};
-
-let accessToken = '';
-
-export const getAccessToken = () => accessToken;
-
-export const setAccessToken = (s: string) => {
-  accessToken = s;
 };
