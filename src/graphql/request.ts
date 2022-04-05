@@ -33,3 +33,26 @@ query Categories {
   }
 }
 `;
+
+export const categoryAddMutation = `
+mutation CategoryAdd($name: String!) {
+  categoryAdd(name: $name) {
+    id
+    name
+  }
+}
+`;
+
+export const bookmarkAddMutation = `
+mutation BookmarkAdd($description: String!, $url: String!, $categoryIds: [Int]) {
+  bookmarkAdd(description: $description, url: $url, categoryIds: $categoryIds) {
+    id
+    url
+    description
+    categories {
+      id
+      name
+    }
+  }
+}
+`;

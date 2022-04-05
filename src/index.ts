@@ -39,7 +39,8 @@ const main = async () => {
       },
     }).then(async (res) => {
       if (!res.ok) {
-        console.log('refresh failed');
+        console.log('Refresh failed.');
+        return;
       }
       const data = await res.json();
       fs.writeFileSync(c.cacheFile, data.accessToken);
@@ -49,7 +50,7 @@ const main = async () => {
   const argv = yargs(hideBin(process.argv))
     .command(
       '*',
-      'Show help',
+      'show help',
       () => {},
       () => {
         yargs.showHelp();
