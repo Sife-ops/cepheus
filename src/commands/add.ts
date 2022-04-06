@@ -42,7 +42,7 @@ export const handler = tokenWrapper(async (argv: Arguments<t.MutationOptions>) =
     entity === 'bookmark'
       ? //
         t.BookmarkAddInput.decode(json)
-      : t.CategoryInput.decode(json);
+      : t.CategoryAddInput.decode(json);
 
   if (decodedInput._tag === 'Left') {
     throw new Error(`${entity} input validation error`);
@@ -52,8 +52,8 @@ export const handler = tokenWrapper(async (argv: Arguments<t.MutationOptions>) =
 
   const decodedResponse =
     entity === 'bookmark'
-      ? t.BookmarkResponse.decode(response.data.bookmarkAdd)
-      : t.CategoryResponse.decode(response.data.categoryAdd);
+      ? t.BookmarkQueryResponse.decode(response.data.bookmarkAdd)
+      : t.CategoryQueryResponse.decode(response.data.categoryAdd);
 
   if (decodedResponse._tag === 'Left') {
     throw new Error(`${entity} add mutation response validation error`);

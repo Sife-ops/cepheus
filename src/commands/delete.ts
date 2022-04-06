@@ -46,8 +46,8 @@ export const handler = tokenWrapper(async (argv: Arguments<t.MutationOptions>) =
 
   const decodedResponse =
     entity === 'bookmark'
-      ? t.BookmarkResponse.decode(response.data.bookmarkDelete)
-      : t.CategoryResponse.decode(response.data.categoryDelete);
+      ? t.BookmarkQueryResponse.decode(response.data.bookmarkDelete)
+      : t.CategoryQueryResponse.decode(response.data.categoryDelete);
 
   if (decodedResponse._tag === 'Left') {
     throw new Error(`${entity} delete mutation response validation error`);

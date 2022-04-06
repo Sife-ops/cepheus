@@ -33,8 +33,8 @@ export const handler = tokenWrapper(async (argv: Arguments<t.QueryOptions>) => {
 
   const decoded =
     entity === 'bookmarks'
-      ? t.BookmarksResponse.decode(response.data.bookmarks)
-      : t.CategoriesResponse.decode(response.data.categories);
+      ? t.BookmarksQueryResponse.decode(response.data.bookmarks)
+      : t.CategoriesQueryResponse.decode(response.data.categories);
 
   if (decoded._tag === 'Left') {
     throw new Error(`${entity} response validation error`);

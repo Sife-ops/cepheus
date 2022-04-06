@@ -16,7 +16,14 @@ export const BookmarkAddInput = t.type({
   categoryIds: t.array(t.number),
 });
 
-export const BookmarkResponse = t.type({
+export const BookmarkUpdateInput = t.type({
+  id: t.number,
+  url: t.union([t.string, t.undefined]),
+  description: t.union([t.string, t.undefined]),
+  categoryIds: t.union([t.array(t.number), t.undefined]),
+});
+
+export const BookmarkQueryResponse = t.type({
   id: t.union([t.number, t.null]),
   url: t.string,
   description: t.string,
@@ -28,13 +35,18 @@ export const BookmarkResponse = t.type({
   ),
 });
 
-export const BookmarksResponse = t.array(BookmarkResponse);
+export const BookmarksQueryResponse = t.array(BookmarkQueryResponse);
 
-export const CategoryInput = t.type({
+export const CategoryAddInput = t.type({
   name: t.string,
 });
 
-export const CategoryResponse = t.type({
+export const CategoryUpdateInput = t.type({
+  id: t.number,
+  name: t.string,
+});
+
+export const CategoryQueryResponse = t.type({
   id: t.union([t.number, t.null]),
   name: t.string,
   bookmarks: t.array(
@@ -46,7 +58,7 @@ export const CategoryResponse = t.type({
   ),
 });
 
-export const CategoriesResponse = t.array(CategoryResponse);
+export const CategoriesQueryResponse = t.array(CategoryQueryResponse);
 
 export const DeleteInput = t.type({
   id: t.number,
