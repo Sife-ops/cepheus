@@ -22,36 +22,39 @@ export const builder: CommandBuilder = (yargs) => {
     });
 };
 
-export const handler = tokenWrapper(async (argv: Arguments<t.MutationOptions>) => {
-  const { entity } = argv;
-  if (entity !== 'bookmark' && entity !== 'category') {
-    throw e.invalidEntityInputError;
+export const handler = tokenWrapper(
+  async (argv: Arguments<t.MutationOptions>) => {
+    const { entity } = argv;
+    if (entity !== 'bookmark' && entity !== 'category') {
+      throw e.invalidEntityInputError;
+    }
+
+    const request =
+      entity === 'bookmark'
+        ? //
+          r.bookmarkDeleteMutation
+        : r.categoryDeleteMutation;
+
+    const json = JSON.parse(argv.json);
+
+    const decodedInput = t.DeleteInput.decode(json);
+
+    if (decodedInput._tag === 'Left') {
+      throw new Error(`${entity} input validation error`);
+    }
+
+    // todo: investigate deletion response bookmarks/categories array stale data
+    const response = await fetchGql(request, decodedInput.right);
+
+    const decodedResponse =
+      entity === 'bookmark'
+        ? t.BookmarkQueryResponse.decode(response.data.bookmarkDelete)
+        : t.CategoryQueryResponse.decode(response.data.categoryDelete);
+
+    if (decodedResponse._tag === 'Left') {
+      throw new Error(`${entity} delete mutation response validation error`);
+    }
+
+    console.log(decodedResponse.right);
   }
-
-  const request =
-    entity === 'bookmark'
-      ? //
-        r.bookmarkDeleteMutation
-      : r.categoryDeleteMutation;
-
-  const json = JSON.parse(argv.json);
-
-  const decodedInput = t.DeleteInput.decode(json);
-
-  if (decodedInput._tag === 'Left') {
-    throw new Error(`${entity} input validation error`);
-  }
-
-  const response = await fetchGql(request, decodedInput.right);
-
-  const decodedResponse =
-    entity === 'bookmark'
-      ? t.BookmarkQueryResponse.decode(response.data.bookmarkDelete)
-      : t.CategoryQueryResponse.decode(response.data.categoryDelete);
-
-  if (decodedResponse._tag === 'Left') {
-    throw new Error(`${entity} delete mutation response validation error`);
-  }
-
-  console.log(decodedResponse.right);
-});
+);

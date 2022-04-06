@@ -89,3 +89,31 @@ mutation Login($username: String!, $password: String!, $remember: Boolean) {
   }
 }
 `;
+
+export const bookmarkUpdateMutation = `
+mutation BookmarkUpdate($id: Int!, $description: String, $url: String, $categoryIds: [Int]) {
+  bookmarkUpdate(id: $id, description: $description, url: $url, categoryIds: $categoryIds) {
+    id
+    url
+    description
+    categories {
+      id
+      name
+    }
+  }
+}
+`;
+
+export const categoryUpdateMutation = `
+mutation CategoryUpdate($id: Int!, $name: String!) {
+  categoryUpdate(id: $id, name: $name) {
+    id
+    name
+    bookmarks {
+      id
+      url
+      description
+    }
+  }
+}
+`;
