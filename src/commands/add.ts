@@ -1,10 +1,11 @@
+import * as e from '../utility/error';
 import * as r from '../graphql/request';
 import * as t from '../utility/type';
 import type { Arguments, CommandBuilder } from 'yargs';
 import { fetchGql } from '../utility/function';
 import { tokenWrapper } from '../utility/function';
 
-// todo: overuse of the work 'entity'
+// todo: overuse of the word 'entity'
 
 export const command = 'add <entity> <json>';
 export const desc = 'add entities';
@@ -25,11 +26,8 @@ export const builder: CommandBuilder = (yargs) => {
 
 export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
   const { entity } = argv;
-  // todo: validate options?
-  // todo: wrapper?
   if (entity !== 'bookmark' && entity !== 'category') {
-    // todo: show help
-    throw new Error('invalid entity');
+    throw e.invalidEntityError;
   }
 
   const request =
@@ -44,7 +42,7 @@ export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
     entity === 'bookmark'
       ? //
         t.BookmarkInput.decode(json)
-      : t.Category.decode(json);
+      : t.CategoryInput.decode(json);
 
   if (decodedInput._tag === 'Left') {
     throw new Error(`${entity} input validation error`);
@@ -54,8 +52,8 @@ export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
 
   const decodedResponse =
     entity === 'bookmark'
-      ? t.Bookmark.decode(response.data.bookmarkAdd)
-      : t.Category.decode(response.data.categoryAdd);
+      ? t.BookmarkResponse.decode(response.data.bookmarkAdd)
+      : t.CategoryResponse.decode(response.data.categoryAdd);
 
   if (decodedResponse._tag === 'Left') {
     throw new Error(`${entity} add mutation response validation error`);

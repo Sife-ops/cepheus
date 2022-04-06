@@ -1,3 +1,4 @@
+import * as e from '../utility/error';
 import * as f from '../utility/function';
 import * as r from '../graphql/request';
 import * as t from '../utility/type';
@@ -19,7 +20,7 @@ export const builder: CommandBuilder = (yargs) => {
 export const handler = tokenWrapper(async (argv: Arguments<t.GetOptions>) => {
   const { entity } = argv;
   if (entity !== 'bookmarks' && entity !== 'categories') {
-    throw new Error('invalid entity');
+    throw e.invalidEntityError;
   }
 
   const request =
@@ -30,5 +31,14 @@ export const handler = tokenWrapper(async (argv: Arguments<t.GetOptions>) => {
 
   const response = await fetchGql(request);
 
-  f.logger(response.data[entity]);
+  const decoded =
+    entity === 'bookmarks'
+      ? t.BookmarksResponse.decode(response.data.bookmarks)
+      : t.CategoriesResponse.decode(response.data.categories);
+
+  if (decoded._tag === 'Left') {
+    throw new Error(`${entity} response validation error`);
+  }
+
+  f.logger(decoded.right);
 });

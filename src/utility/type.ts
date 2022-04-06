@@ -9,18 +9,41 @@ export interface GetOptions {
   entity: 'bookmarks' | 'categories';
 }
 
-export const Category = t.type({
-  name: t.string,
-});
-
-export const Bookmark = t.type({
-  url: t.string,
-  description: t.string,
-  categories: t.array(Category),
-});
-
+// todo: move to request.ts?
 export const BookmarkInput = t.type({
   url: t.string,
   description: t.string,
   categoryIds: t.array(t.number),
 });
+
+export const BookmarkResponse = t.type({
+  id: t.number,
+  url: t.string,
+  description: t.string,
+  categories: t.array(
+    t.type({
+      id: t.number,
+      name: t.string,
+    })
+  ),
+});
+
+export const BookmarksResponse = t.array(BookmarkResponse);
+
+export const CategoryInput = t.type({
+  name: t.string,
+});
+
+export const CategoryResponse = t.type({
+  id: t.number,
+  name: t.string,
+  bookmarks: t.array(
+    t.type({
+      id: t.number,
+      url: t.string,
+      description: t.string,
+    })
+  ),
+});
+
+export const CategoriesResponse = t.array(CategoryResponse);

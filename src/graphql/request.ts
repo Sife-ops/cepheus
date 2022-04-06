@@ -39,6 +39,11 @@ mutation CategoryAdd($name: String!) {
   categoryAdd(name: $name) {
     id
     name
+    bookmarks {
+      id
+      url
+      description
+    }
   }
 }
 `;
