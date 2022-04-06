@@ -1,11 +1,11 @@
 import * as t from 'io-ts';
 
-export interface AddOptions {
+export interface MutationOptions {
   entity: 'bookmark' | 'category';
   json: string;
 }
 
-export interface GetOptions {
+export interface QueryOptions {
   entity: 'bookmarks' | 'categories';
 }
 

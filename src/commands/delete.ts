@@ -24,7 +24,7 @@ export const builder: CommandBuilder = (yargs) => {
     });
 };
 
-export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
+export const handler = tokenWrapper(async (argv: Arguments<t.MutationOptions>) => {
   const { entity } = argv;
   if (entity !== 'bookmark' && entity !== 'category') {
     throw e.invalidEntityInputError;
