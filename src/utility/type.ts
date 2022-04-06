@@ -10,14 +10,14 @@ export interface QueryOptions {
 }
 
 // todo: move to request.ts?
-export const BookmarkInput = t.type({
+export const BookmarkAddInput = t.type({
   url: t.string,
   description: t.string,
   categoryIds: t.array(t.number),
 });
 
 export const BookmarkResponse = t.type({
-  id: t.number,
+  id: t.union([t.number, t.null]),
   url: t.string,
   description: t.string,
   categories: t.array(

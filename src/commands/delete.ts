@@ -5,8 +5,6 @@ import type { Arguments, CommandBuilder } from 'yargs';
 import { fetchGql } from '../utility/function';
 import { tokenWrapper } from '../utility/function';
 
-// todo: overuse of the word 'entity'
-
 export const command = 'delete <entity> <json>';
 export const desc = 'delete entities';
 

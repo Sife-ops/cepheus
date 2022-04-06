@@ -41,7 +41,7 @@ export const handler = tokenWrapper(async (argv: Arguments<t.MutationOptions>) =
   const decodedInput =
     entity === 'bookmark'
       ? //
-        t.BookmarkInput.decode(json)
+        t.BookmarkAddInput.decode(json)
       : t.CategoryInput.decode(json);
 
   if (decodedInput._tag === 'Left') {
