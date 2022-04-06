@@ -5,6 +5,10 @@ export interface AddOptions {
   json: string;
 }
 
+export interface GetOptions {
+  entity: 'bookmarks' | 'categories';
+}
+
 export const Category = t.type({
   name: t.string,
 });

@@ -4,8 +4,10 @@ import type { Arguments, CommandBuilder } from 'yargs';
 import { fetchGql } from '../utility/function';
 import { tokenWrapper } from '../utility/function';
 
+// todo: overuse of the work 'entity'
+
 export const command = 'add <entity> <json>';
-export const desc = 'manage entities';
+export const desc = 'add entities';
 
 export const builder: CommandBuilder = (yargs) => {
   return yargs
@@ -24,23 +26,28 @@ export const builder: CommandBuilder = (yargs) => {
 export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
   const { entity } = argv;
   // todo: validate options?
+  // todo: wrapper?
   if (entity !== 'bookmark' && entity !== 'category') {
-    console.log('Invalid entity option.');
-    return;
+    // todo: show help
+    throw new Error('invalid entity');
   }
 
-  const operation = entity === 'bookmark' ? 'Bookmark' : 'Category';
   const request =
-    entity === 'bookmark' ? r.bookmarkAddMutation : r.categoryAddMutation;
+    entity === 'bookmark'
+      ? //
+        r.bookmarkAddMutation
+      : r.categoryAddMutation;
 
   const json = JSON.parse(argv.json);
+
   const decodedInput =
     entity === 'bookmark'
-      ? t.BookmarkInput.decode(json)
+      ? //
+        t.BookmarkInput.decode(json)
       : t.Category.decode(json);
 
   if (decodedInput._tag === 'Left') {
-    throw new Error(`${operation} input validation error.`);
+    throw new Error(`${entity} input validation error`);
   }
 
   const response = await fetchGql(request, decodedInput.right);
@@ -51,7 +58,7 @@ export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
       : t.Category.decode(response.data.categoryAdd);
 
   if (decodedResponse._tag === 'Left') {
-    throw new Error(`${operation} add mutation response validation error.`);
+    throw new Error(`${entity} add mutation response validation error`);
   }
 
   console.log(decodedResponse.right);
