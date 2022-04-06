@@ -1,1 +1,1 @@
-export const invalidEntityError = new Error('invalid entity');
+export const invalidEntityInputError = new Error('invalid entity');

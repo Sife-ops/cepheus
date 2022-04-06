@@ -20,7 +20,7 @@ export const builder: CommandBuilder = (yargs) => {
 export const handler = tokenWrapper(async (argv: Arguments<t.GetOptions>) => {
   const { entity } = argv;
   if (entity !== 'bookmarks' && entity !== 'categories') {
-    throw e.invalidEntityError;
+    throw e.invalidEntityInputError;
   }
 
   const request =

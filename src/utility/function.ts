@@ -38,7 +38,6 @@ export const tokenWrapper = (handler: (argv: any) => void) => {
   }
 
   // todo: add try-catch?
-  // todo: move to tokenWrapper?
   if (getAccessToken().length > 0) {
     fetch(`${c.url}/refresh`, {
       method: 'POST',
@@ -48,7 +47,7 @@ export const tokenWrapper = (handler: (argv: any) => void) => {
       },
     }).then(async (res) => {
       if (!res.ok) {
-        console.log('Refresh failed.');
+        console.log('refresh failed');
         return;
       }
       const data = await res.json();
@@ -74,7 +73,10 @@ export const fetchGql = async (query: string, variables?: {}) => {
 
   if (!res.ok) {
     throw new Error(
-      `HTTP error: ${{ status: res.status, statusText: res.statusText }}`
+      `HTTP error: ${JSON.stringify({
+        status: res.status,
+        statusText: res.statusText,
+      })}`
     );
   }
 

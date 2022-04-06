@@ -35,7 +35,7 @@ export const CategoryInput = t.type({
 });
 
 export const CategoryResponse = t.type({
-  id: t.number,
+  id: t.union([t.number, t.null]),
   name: t.string,
   bookmarks: t.array(
     t.type({
@@ -47,3 +47,7 @@ export const CategoryResponse = t.type({
 });
 
 export const CategoriesResponse = t.array(CategoryResponse);
+
+export const DeleteInput = t.type({
+  id: t.number,
+});

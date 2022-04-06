@@ -7,13 +7,13 @@ import { tokenWrapper } from '../utility/function';
 
 // todo: overuse of the word 'entity'
 
-export const command = 'add <entity> <json>';
-export const desc = 'add entities';
+export const command = 'delete <entity> <json>';
+export const desc = 'delete entities';
 
 export const builder: CommandBuilder = (yargs) => {
   return yargs
     .positional('entity', {
-      describe: 'type of entity to add',
+      describe: 'type of entity to delete',
       type: 'string',
       demandOption: true,
     })
@@ -33,16 +33,12 @@ export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
   const request =
     entity === 'bookmark'
       ? //
-        r.bookmarkAddMutation
-      : r.categoryAddMutation;
+        r.bookmarkDeleteMutation
+      : r.categoryDeleteMutation;
 
   const json = JSON.parse(argv.json);
 
-  const decodedInput =
-    entity === 'bookmark'
-      ? //
-        t.BookmarkInput.decode(json)
-      : t.CategoryInput.decode(json);
+  const decodedInput = t.DeleteInput.decode(json);
 
   if (decodedInput._tag === 'Left') {
     throw new Error(`${entity} input validation error`);
@@ -52,11 +48,11 @@ export const handler = tokenWrapper(async (argv: Arguments<t.AddOptions>) => {
 
   const decodedResponse =
     entity === 'bookmark'
-      ? t.BookmarkResponse.decode(response.data.bookmarkAdd)
-      : t.CategoryResponse.decode(response.data.categoryAdd);
+      ? t.BookmarkResponse.decode(response.data.bookmarkDelete)
+      : t.CategoryResponse.decode(response.data.categoryDelete);
 
   if (decodedResponse._tag === 'Left') {
-    throw new Error(`${entity} add mutation response validation error`);
+    throw new Error(`${entity} delete mutation response validation error`);
   }
 
   console.log(decodedResponse.right);

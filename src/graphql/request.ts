@@ -1,7 +1,27 @@
-export const loginMutation = `
-mutation Login($username: String!, $password: String!, $remember: Boolean) {
-  login(username: $username, password: $password, remember: $remember) {
-    accessToken
+export const bookmarkAddMutation = `
+mutation BookmarkAdd($description: String!, $url: String!, $categoryIds: [Int]) {
+  bookmarkAdd(description: $description, url: $url, categoryIds: $categoryIds) {
+    id
+    url
+    description
+    categories {
+      id
+      name
+    }
+  }
+}
+`;
+
+export const bookmarkDeleteMutation = `
+mutation BookmarkDelete($id: Int!) {
+  bookmarkDelete(id: $id) {
+    id
+    url
+    description
+    categories {
+      id
+      name
+    }
   }
 }
 `;
@@ -15,20 +35,6 @@ query Bookmarks {
     categories {
       id
       name
-    }
-  }
-}
-`;
-
-export const categoriesQuery = `
-query Categories {
-  categories {
-    id
-    name
-    bookmarks {
-      id
-      url
-      description
     }
   }
 }
@@ -48,16 +54,38 @@ mutation CategoryAdd($name: String!) {
 }
 `;
 
-export const bookmarkAddMutation = `
-mutation BookmarkAdd($description: String!, $url: String!, $categoryIds: [Int]) {
-  bookmarkAdd(description: $description, url: $url, categoryIds: $categoryIds) {
+export const categoryDeleteMutation = `
+mutation CategoryDelete($id: Int!) {
+  categoryDelete(id: $id) {
     id
-    url
-    description
-    categories {
+    name
+    bookmarks {
       id
-      name
+      url
+      description
     }
+  }
+}
+`;
+
+export const categoriesQuery = `
+query Categories {
+  categories {
+    id
+    name
+    bookmarks {
+      id
+      url
+      description
+    }
+  }
+}
+`;
+
+export const loginMutation = `
+mutation Login($username: String!, $password: String!, $remember: Boolean) {
+  login(username: $username, password: $password, remember: $remember) {
+    accessToken
   }
 }
 `;
